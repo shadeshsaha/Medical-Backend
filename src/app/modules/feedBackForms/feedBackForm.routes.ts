@@ -1,0 +1,34 @@
+import express from 'express';
+// import validateRequest from '../../middlewares/validateRequest';
+import { userRole } from '@prisma/client';
+import auth from '../../middlewares/auth';
+import { FeedBackController } from './feedBackForm.controller';
+
+const router = express.Router();
+
+router.post(
+  '/add-feedback',
+  auth(userRole.USER),
+  // validateRequest(FeedBackValidation.createFeedBack),
+  FeedBackController.createNewFeedBack
+);
+
+router.get(
+  '/',
+  //   auth(userRole.USER, userRole.ADMIN, userRole.SUPER_ADMIN, userRole.DOCTOR),
+  FeedBackController.getAllFeedBack
+);
+
+router.patch(
+  '/:feedbackId',
+  //   auth(userRole.USER, userRole.ADMIN, userRole.SUPER_ADMIN, userRole.DOCTOR),
+  FeedBackController.updateFeedBack
+);
+
+router.delete(
+  '/:feedbackId',
+  //   auth(userRole.USER, userRole.ADMIN, userRole.SUPER_ADMIN, userRole.DOCTOR),
+  FeedBackController.singleFeedBackDelete
+);
+
+export const FeedBackRoutes = router;
