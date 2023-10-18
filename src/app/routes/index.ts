@@ -1,5 +1,6 @@
 import express from 'express';
 import { SpecializationRoutes } from '../modules/Specialization/specialization.routes';
+import { AppointmentBookingRoutes } from '../modules/appointmentBooking/appointmentBooking.routes';
 import { AuthRoutes } from '../modules/auth/auth.routes';
 import { CategoryRoutes } from '../modules/category/category.routes';
 import { FeedBackRoutes } from '../modules/feedBackForms/feedBackForm.routes';
@@ -47,6 +48,10 @@ const moduleRoutes = [
   {
     path: '/specialization',
     route: SpecializationRoutes,
+  },
+  {
+    path: '/appointment-booking',
+    route: AppointmentBookingRoutes,
   },
 ];
 

@@ -183,8 +183,7 @@ model AppointmentBooking {
 
 model TimeSlot {
   slotId       String               @id @default(uuid())
-  startTime    DateTime             @unique
-  endTime      DateTime             @unique
+  slotTime     String
   createdAt    DateTime             @default(now())
   updatedAt    DateTime             @updatedAt
   // 
