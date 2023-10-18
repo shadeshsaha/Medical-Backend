@@ -3,8 +3,9 @@ import express from 'express';
 // import auth from '../../middlewares/auth';
 import { userRole } from '@prisma/client';
 import auth from '../../middlewares/auth';
+import validateRequest from '../../middlewares/validateRequest';
 import { UserController } from './users.controller';
-// import validateRequest from '../../middlewares/validateRequest';
+import { UserValidation } from './users.validations';
 
 const router = express.Router();
 
@@ -34,7 +35,7 @@ router.get(
 router.patch(
   '/update-profile/:profileId',
   // auth(userRole.ADMIN, userRole.SUPER_ADMIN),
-  // validateRequest(UserValidation.updateUser),
+  validateRequest(UserValidation.updateUser),
   UserController.updateProfileInfo
 );
 
