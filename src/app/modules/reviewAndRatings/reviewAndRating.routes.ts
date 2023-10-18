@@ -1,15 +1,23 @@
 import { userRole } from '@prisma/client';
 import express from 'express';
 import auth from '../../middlewares/auth';
+import validateRequest from '../../middlewares/validateRequest';
 import { ReviewController } from './reviewAndRating.controller';
+import { ReviewAndRatingValidation } from './reviewAndRating.validations';
 
 const router = express.Router();
 
-router.post('/add-review', auth(userRole.USER), ReviewController.createNewSlot);
+router.post(
+  '/add-review',
+  auth(userRole.USER),
+  validateRequest(ReviewAndRatingValidation.createReviewAndRating),
+  ReviewController.createNewSlot
+);
 
 router.patch(
   '/:reviewId',
   auth(userRole.USER, userRole.ADMIN, userRole.SUPER_ADMIN),
+  validateRequest(ReviewAndRatingValidation.updateReviewAndRating),
   ReviewController.updateReview
 );
 
