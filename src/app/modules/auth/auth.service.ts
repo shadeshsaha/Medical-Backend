@@ -4,12 +4,19 @@ import { userRole } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import { Request } from 'express';
 import httpStatus from 'http-status';
+import { Secret } from 'jsonwebtoken';
 import config from '../../../config';
 import ApiError from '../../../errors/ApiError';
+import { jwtHelpers } from '../../../helpers/jwtHelpers';
 import prisma from '../../../shared/prisma';
-import { IUserCreate } from './auth.interface';
+import {
+  ILoginUserResponse,
+  IRefreshTokenResponse,
+  IUserCreate,
+  IUserLogin,
+} from './auth.interface';
 
-// ! user create
+// Create User
 const createNewUser = async (req: Request) => {
   const data = (await req.body) as IUserCreate;
 
@@ -98,6 +105,130 @@ const createNewUser = async (req: Request) => {
   return newUser;
 };
 
+// Login
+const userLogin = async (
+  loginData: IUserLogin
+): Promise<ILoginUserResponse> => {
+  const { email, password } = loginData;
+
+  const isUserExist = await prisma.user.findUnique({
+    where: {
+      email,
+    },
+    select: {
+      userId: true,
+      password: true,
+      profile: {
+        select: {
+          role: true,
+          profileId: true,
+        },
+      },
+    },
+  });
+
+  if (!isUserExist) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'User not found !!');
+  }
+
+  const isPasswordValid = await bcrypt.compare(password, isUserExist?.password);
+
+  if (isUserExist && !isPasswordValid) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Password is incorrect !!');
+  }
+
+  type TokenData = {
+    userId: string;
+    role: userRole;
+    profileId: string;
+  };
+
+  const tokenData: TokenData = {
+    userId: isUserExist.userId,
+    role: isUserExist?.profile?.role!,
+    profileId: isUserExist.profile?.profileId!,
+  };
+
+  const accessToken = jwtHelpers.createToken(
+    tokenData,
+    config.jwt.secret as Secret,
+    config.jwt.expires_in as string
+  );
+  const refreshToken = jwtHelpers.createToken(
+    tokenData,
+    config.jwt.refresh_secret as Secret,
+    config.jwt.refresh_expires_in as string
+  );
+
+  return {
+    accessToken,
+    refreshToken,
+  };
+};
+
+// Refresh-Token
+const refreshToken = async (token: string): Promise<IRefreshTokenResponse> => {
+  // verify token
+  let verifiedToken = null;
+
+  try {
+    verifiedToken = jwtHelpers.verifyToken(
+      token,
+      config.jwt.refresh_secret as Secret
+    );
+  } catch (error) {
+    throw new ApiError(httpStatus.FORBIDDEN, 'Invalid Refresh Token');
+  }
+
+  // If user does not exist, check deleted user's refresh token
+  const { userId } = verifiedToken;
+
+  const isUserExist = await prisma.user.findFirst({
+    where: {
+      userId,
+    },
+    select: {
+      userId: true,
+      password: true,
+      profile: {
+        select: {
+          role: true,
+          profileId: true,
+        },
+      },
+    },
+  });
+
+  if (!isUserExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User does not exists!!');
+  }
+
+  type TokenData = {
+    userId: string;
+    role: userRole;
+    profileId: string;
+  };
+
+  const tokenData: TokenData = {
+    userId: isUserExist.userId,
+    role: isUserExist?.profile?.role!,
+    profileId: isUserExist?.profile?.profileId!,
+  };
+
+  // Generate new token
+  const newAccessToken = jwtHelpers.createToken(
+    tokenData,
+    config.jwt.secret as Secret,
+    config.jwt.expires_in as string
+  );
+
+  return {
+    accessToken: newAccessToken,
+  };
+};
+
 export const AuthService = {
   createNewUser,
+  userLogin,
+  refreshToken,
 };
