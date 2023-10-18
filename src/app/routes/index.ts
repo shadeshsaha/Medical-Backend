@@ -1,10 +1,12 @@
 import express from 'express';
+import { SpecializationRoutes } from '../modules/Specialization/specialization.routes';
 import { AuthRoutes } from '../modules/auth/auth.routes';
 import { CategoryRoutes } from '../modules/category/category.routes';
 import { FeedBackRoutes } from '../modules/feedBackForms/feedBackForm.routes';
 import { ProductsRoutes } from '../modules/products/products.routes';
 import { ReviewAndRatingRoutes } from '../modules/reviewAndRatings/reviewAndRating.routes';
 import { MedServiceRoutes } from '../modules/services/service.routes';
+import { SlotRoutes } from '../modules/slots/slots.routes';
 import { UserRoutes } from '../modules/users/users.routes';
 
 const router = express.Router();
@@ -37,6 +39,14 @@ const moduleRoutes = [
   {
     path: '/review-ratings',
     route: ReviewAndRatingRoutes,
+  },
+  {
+    path: '/slots',
+    route: SlotRoutes,
+  },
+  {
+    path: '/specialization',
+    route: SpecializationRoutes,
   },
 ];
 

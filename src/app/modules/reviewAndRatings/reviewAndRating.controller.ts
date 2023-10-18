@@ -15,7 +15,7 @@ const createNewSlot = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'slot created successfully!',
+    message: 'Review And Ratings created successfully!',
     data: result,
   });
 });
