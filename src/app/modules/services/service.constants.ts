@@ -1,0 +1,20 @@
+export const blogFilterableFields: string[] = [
+  'searchTerm',
+  'profileId',
+  'createdAt',
+];
+
+export const ServiceFilterableFields: string[] = [
+  'searchTerm',
+  'serviceName',
+  'createdAt',
+  'location',
+  'servicePrice',
+];
+
+export const serviceSearchableFields: string[] = ['serviceName', 'location'];
+
+export const serviceRelationalFields: string[] = ['categoryId'];
+export const serviceRelationalFieldsMapper: { [key: string]: string } = {
+  categoryId: 'categoryId',
+};
