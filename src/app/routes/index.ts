@@ -2,6 +2,7 @@ import express from 'express';
 import { SpecializationRoutes } from '../modules/Specialization/specialization.routes';
 import { AppointmentBookingRoutes } from '../modules/appointmentBooking/appointmentBooking.routes';
 import { AuthRoutes } from '../modules/auth/auth.routes';
+import { BlogRoutes } from '../modules/blogs/blogs.routes';
 import { CategoryRoutes } from '../modules/category/category.routes';
 import { FeedBackRoutes } from '../modules/feedBackForms/feedBackForm.routes';
 import { ProductsRoutes } from '../modules/products/products.routes';
@@ -52,6 +53,10 @@ const moduleRoutes = [
   {
     path: '/appointment-booking',
     route: AppointmentBookingRoutes,
+  },
+  {
+    path: '/blogs',
+    route: BlogRoutes,
   },
 ];
 
