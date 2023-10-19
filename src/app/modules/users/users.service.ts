@@ -408,6 +408,7 @@ const updateMyUserInfo = async (
 
 // Get my profile
 const getMyProfile = async (userId: string): Promise<IUsersResponse | null> => {
+  // console.log('userId: ' + userId);
   const result = await prisma.user.findUnique({
     where: {
       userId,
@@ -420,6 +421,8 @@ const getMyProfile = async (userId: string): Promise<IUsersResponse | null> => {
       updatedAt: true,
     },
   });
+
+  console.log('result: ', result);
 
   if (!result) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not Found !!');

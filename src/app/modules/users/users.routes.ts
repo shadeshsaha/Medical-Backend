@@ -1,7 +1,5 @@
-// import { userRole } from '@prisma/client';
-import express from 'express';
-// import auth from '../../middlewares/auth';
 import { userRole } from '@prisma/client';
+import express from 'express';
 import auth from '../../middlewares/auth';
 import validateRequest from '../../middlewares/validateRequest';
 import { UserController } from './users.controller';
@@ -9,50 +7,49 @@ import { UserValidation } from './users.validations';
 
 const router = express.Router();
 
-// Get all Users
+// Get All Users
 router.get(
   '/',
-  // auth(userRole.ADMIN, userRole.SUPER_ADMIN),
+  auth(userRole.ADMIN, userRole.SUPER_ADMIN),
   UserController.getAllUsersController
-);
-
-// Get single user
-router.get(
-  '/:userId',
-  // auth(userRole.ADMIN, userRole.SUPER_ADMIN, userRole.USER, userRole.DOCTOR),
-  UserController.getSingleUser
 );
 
 // Get My Profile
 router.get(
-  '/my-profile/:userId',
-  // '/my-profile',
+  '/my-profile',
   auth(userRole.ADMIN, userRole.SUPER_ADMIN, userRole.USER, userRole.DOCTOR),
   UserController.getMyProfile
 );
 
-// Update My Profile data
+// Get Single User
+router.get(
+  '/:userId',
+  auth(userRole.ADMIN, userRole.SUPER_ADMIN),
+  UserController.getSingleUser
+);
+
+// Update My User data
+router.patch(
+  '/update-my-email-password',
+  auth(userRole.USER, userRole.ADMIN, userRole.SUPER_ADMIN),
+  validateRequest(UserValidation.updateUser),
+  UserController.updateMyUserInfo
+);
+
+// Update Profile Data
 router.patch(
   '/update-profile/:profileId',
-  // auth(userRole.ADMIN, userRole.SUPER_ADMIN),
+  auth(userRole.ADMIN, userRole.SUPER_ADMIN),
   validateRequest(UserValidation.updateUser),
   UserController.updateProfileInfo
 );
 
-// // Update User data
-// router.patch(
-//   '/update-user/:userId',
-//   // auth(userRole.ADMIN, userRole.SUPER_ADMIN),
-//   // validateRequest(UserValidation.updateUser),
-//   UserController.updateUserInfo
-// );
-
-// // Update My Profile data
-// router.patch(
-//   '/update-my-profile',
-//   // auth(userRole.ADMIN, userRole.SUPER_ADMIN, userRole.USER, userRole.DOCTOR),
-//   // validateRequest(UserValidation.updateUser),
-//   UserController.updateMyProfileInfo
-// );
+// Update My Profile Data
+router.patch(
+  '/update-my-profile',
+  auth(userRole.ADMIN, userRole.SUPER_ADMIN, userRole.USER, userRole.DOCTOR),
+  validateRequest(UserValidation.updateUser),
+  UserController.updateMyProfileInfo
+);
 
 export const UserRoutes = router;
