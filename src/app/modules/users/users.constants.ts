@@ -26,7 +26,21 @@ export const studentRelationalFieldsMapper: { [key: string]: string } = {
 
 export const ZodUserRoles = ['SUPER_ADMIN', 'ADMIN', 'USER', 'DOCTOR'];
 
-export type IUpdateUserResponse = {
-  message: string;
-  updatedInfo: { email?: string; password?: string };
+// export type IUpdateUserResponse = {
+//   message: string;
+//   updatedInfo: { email?: string; password?: string };
+// };
+
+//
+export const UserSearchableFields: string[] = ['email'];
+
+export const userRelationalFields: string[] = ['profileId'];
+export const userRelationalFieldsMapper: { [key: string]: string } = {
+  profileId: 'profileId',
 };
+export const userFilterableFields: string[] = [
+  'searchTerm',
+  'profileId',
+  'email',
+  'role',
+];

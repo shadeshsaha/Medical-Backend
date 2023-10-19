@@ -118,10 +118,13 @@ const userLogin = async (
     select: {
       userId: true,
       password: true,
+      email: true,
       profile: {
         select: {
           role: true,
           profileId: true,
+          firstName: true,
+          lastName: true,
         },
       },
     },
@@ -141,12 +144,18 @@ const userLogin = async (
     userId: string;
     role: userRole;
     profileId: string;
+    email: string;
+    firstName: string;
+    lastName: string;
   };
 
   const tokenData: TokenData = {
     userId: isUserExist.userId,
     role: isUserExist?.profile?.role!,
     profileId: isUserExist.profile?.profileId!,
+    email: isUserExist.email,
+    firstName: isUserExist.profile?.firstName!,
+    lastName: isUserExist.profile?.lastName!,
   };
 
   const accessToken = jwtHelpers.createToken(
