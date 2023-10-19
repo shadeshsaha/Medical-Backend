@@ -150,6 +150,16 @@ const getSingleService = async (serviceId: string): Promise<Service | null> => {
     where: {
       serviceId,
     },
+    include: {
+      reviewAndRatings: {
+        include: {
+          profile: true,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      },
+    },
   });
 
   if (!result) {
