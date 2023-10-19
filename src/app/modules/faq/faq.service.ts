@@ -22,6 +22,7 @@ const createNewFaq = async (
       faqTitle: true,
       faqDescription: true,
       createdAt: true,
+      faqId: true,
     },
   });
   if (!result) {
