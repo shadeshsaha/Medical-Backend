@@ -4,6 +4,7 @@ import { AppointmentBookingRoutes } from '../modules/appointmentBooking/appointm
 import { AuthRoutes } from '../modules/auth/auth.routes';
 import { BlogRoutes } from '../modules/blogs/blogs.routes';
 import { CategoryRoutes } from '../modules/category/category.routes';
+import { FaqRoutes } from '../modules/faq/faq.routes';
 import { FeedBackRoutes } from '../modules/feedBackForms/feedBackForm.routes';
 import { ProductsRoutes } from '../modules/products/products.routes';
 import { ReviewAndRatingRoutes } from '../modules/reviewAndRatings/reviewAndRating.routes';
@@ -57,6 +58,10 @@ const moduleRoutes = [
   {
     path: '/blogs',
     route: BlogRoutes,
+  },
+  {
+    path: '/faqs',
+    route: FaqRoutes,
   },
 ];
 
