@@ -36,7 +36,7 @@ const moduleRoutes = [
     route: MedServiceRoutes,
   },
   {
-    path: '/feedback-forms',
+    path: '/feedbacks',
     route: FeedBackRoutes,
   },
   {

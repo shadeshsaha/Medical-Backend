@@ -20,35 +20,21 @@ import {
 } from './feedBackForm.interface';
 
 const createNewFeedBackForm = async (
-  profileId: string,
   payload: ICreateFeedBackFormReq
 ): Promise<ICreateFeedBackFormResponse> => {
-  const isExisting = await prisma.service.findUnique({
-    where: {
-      serviceId: payload.serviceId,
-    },
-  });
-
-  if (!isExisting) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Service not found');
-  }
-
   const createdNewFeedBack = await prisma.feedBackForm.create({
     data: {
       feedbackComment: payload.feedbackComment,
-      serviceId: payload.serviceId,
-      profileId,
-    },
-    select: {
-      createdAt: true,
-      feedbackComment: true,
+      userName: payload.userName,
+      email: payload.email,
+      contactNumber: payload.contactNumber,
     },
   });
+
+  console.log(createdNewFeedBack);
+
   if (!createdNewFeedBack) {
-    throw new ApiError(
-      httpStatus.BAD_REQUEST,
-      'Review and rating failed to add'
-    );
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Feedback failed to add');
   }
 
   return createdNewFeedBack;
@@ -142,7 +128,9 @@ const updateFeedBack = async (
 
   const updateFeedback = {
     feedbackComment: payload?.feedbackComment,
-    serviceId: payload?.serviceId,
+    userName: payload?.userName,
+    email: payload?.email,
+    contactNumber: payload?.contactNumber,
   };
 
   const result = await prisma.feedBackForm.update({

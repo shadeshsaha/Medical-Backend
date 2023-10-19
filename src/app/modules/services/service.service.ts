@@ -118,7 +118,6 @@ const getAllServices = async (
       category: true,
       products: true,
       reviewAndRatings: true,
-      feedBackForms: true,
       appointmentBooked: true,
     },
     where: whereConditions,

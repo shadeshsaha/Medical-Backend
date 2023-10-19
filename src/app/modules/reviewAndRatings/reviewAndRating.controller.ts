@@ -48,8 +48,22 @@ const singleReviewDelete = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getMyReviews = catchAsync(async (req: Request, res: Response) => {
+  const profileId = (req.user as IRequestUser).profileId;
+
+  const result = await RatingAndReviewService.getAllMyReviews(profileId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'fetched successfully',
+    data: result,
+  });
+});
+
 export const ReviewController = {
   createNewSlot,
   updateReview,
   singleReviewDelete,
+  getMyReviews,
 };
