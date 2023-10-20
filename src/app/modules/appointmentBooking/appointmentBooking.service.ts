@@ -20,10 +20,12 @@ import {
   IUpdateAppointmentBookingReq,
 } from './appointmentBooking.interface';
 
+// ! appointment booking
 const createAppointmentBooking = async (
   profileId: string,
   payload: ICreateAppointmentBookingReq
 ): Promise<ICreateAppointmentBookingRes> => {
+  //
   const isExistingService = await prisma.service.findUnique({
     where: {
       serviceId: payload.serviceId,
@@ -152,8 +154,6 @@ const getAllAppointment = async (
       slot: {
         select: {
           slotTime: true,
-          //   slotId: true,
-          //   startTime: true,
         },
       },
       profile: {
@@ -189,11 +189,18 @@ const getAllAppointment = async (
   };
 };
 
+// get all appoinment length
+const getAllAppointmentLength = async (): Promise<number> => {
+  const result = await prisma.appointmentBooking.count();
+  return result;
+};
+
+// ! update Category ----------------------
 const updateAppointment = async (
   appointmentId: string,
   payload: Partial<IUpdateAppointmentBookingReq>
 ): Promise<AppointmentBooking | null> => {
-  // console.log(payload);
+  console.log(payload);
 
   const isExist = await prisma.appointmentBooking.findUnique({
     where: {
@@ -346,8 +353,6 @@ const getMyAppointment = async (
       slot: {
         select: {
           slotTime: true,
-          //   slotId: true,
-          //   startTime: true,
         },
       },
       profile: {
@@ -383,10 +388,36 @@ const getMyAppointment = async (
   };
 };
 
+// get my pending and rejected appointmentStatus length like : pending :1 , rejected : 2
+const getMyAppointmentLength = async (profileId: string) => {
+  const result = await prisma.appointmentBooking.count({
+    where: {
+      profileId: profileId,
+      appointmentStatus: {
+        in: ['pending'],
+      },
+    },
+  });
+  const result2 = await prisma.appointmentBooking.count({
+    where: {
+      profileId: profileId,
+      appointmentStatus: {
+        in: ['rejected'],
+      },
+    },
+  });
+  return {
+    pending: result,
+    rejected: result2,
+  };
+};
+
 export const AppointmentBookingService = {
   createAppointmentBooking,
   getAllAppointment,
   deleteAppointment,
   updateAppointment,
   getMyAppointment,
+  getAllAppointmentLength,
+  getMyAppointmentLength,
 };

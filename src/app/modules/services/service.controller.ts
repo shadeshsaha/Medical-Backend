@@ -1,17 +1,17 @@
 import { Request, Response } from 'express';
 import httpStatus from 'http-status';
 import catchAsync from '../../../shared/catchAsync';
-import pick from '../../../shared/pick';
 import sendResponse from '../../../shared/sendResponse';
-import { ServiceFilterableFields } from './service.constants';
 import { MedService } from './service.service';
+import pick from '../../../shared/pick';
+import { ServiceFilterableFields } from './service.constants';
 
 const createNewService = catchAsync(async (req: Request, res: Response) => {
   const result = await MedService.createNewService(req);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Service created Successfully',
+    message: 'service created Successfully',
     data: result,
   });
 });
@@ -25,7 +25,7 @@ const getAllServices = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'All Services fetched successfully',
+    message: 'Services fetched successfully',
     meta: result.meta,
     data: result.data,
   });
@@ -38,31 +38,37 @@ const getSingleService = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Single Service retrieved successfully',
+    message: 'service retrieved successfully',
     data: result,
   });
 });
 
-const updateService = catchAsync(async (req: Request, res: Response) => {
-  const { serviceId } = req.params;
-  const result = await MedService.updateService(serviceId, req.body);
+const updateService = catchAsync(
+  async (req: Request, res: Response) => {
+    const { serviceId } = req.params;
+    const result = await MedService.updateService(
+      serviceId,
+      req.body
+    );
 
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'Service Updated successfully',
-    data: result,
-  });
-});
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Service Edited successfully',
+      data: result,
+    });
+  }
+);
+
 
 const SingleServiceDelete = catchAsync(async (req: Request, res: Response) => {
   const { serviceId } = req.params;
-  await MedService.SingleServiceDelete(serviceId);
+   await MedService.SingleServiceDelete(serviceId);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Service deleted successfully',
+    message: 'service deleted successfully',
   });
 });
 
@@ -71,5 +77,5 @@ export const MedServiceController = {
   getAllServices,
   getSingleService,
   SingleServiceDelete,
-  updateService,
+  updateService
 };

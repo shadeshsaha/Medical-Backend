@@ -1,31 +1,31 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { Request } from 'express';
 import httpStatus from 'http-status';
 import ApiError from '../../../errors/ApiError';
 import prisma from '../../../shared/prisma';
 import {
   IBlogCreateRequest,
   IBlogFilterRequest,
-  IBlogUpdateRequest,
   ICreateNewBlogResponse,
 } from './blogs.interface';
 
+import { IPaginationOptions } from '../../../interfaces/pagination';
+import { IGenericResponse } from '../../../interfaces/common';
 import { Blog, Prisma } from '@prisma/client';
 import { paginationHelpers } from '../../../helpers/paginationHelper';
-import { IGenericResponse } from '../../../interfaces/common';
-import { IPaginationOptions } from '../../../interfaces/pagination';
 import {
   blogRelationalFields,
   blogRelationalFieldsMapper,
   blogSearchableFields,
 } from './blogs.constants';
 
+// modules
+
 const createNewBlog = async (
   profileId: string,
-  req: Request
+  data: IBlogCreateRequest
 ): Promise<ICreateNewBlogResponse> => {
-  const data = req.body as IBlogCreateRequest;
+ 
 
   const result = await prisma.$transaction(async transactionClient => {
     const createdBlog = await transactionClient.blog.create({
@@ -33,7 +33,7 @@ const createNewBlog = async (
         blogTitle: data.blogTitle,
         blogDescription: data.blogDescription,
         blogImage: data.blogImage,
-        profileId: profileId,
+        profileId,
       },
       select: {
         blogId: true,
@@ -129,6 +129,8 @@ const getAllBlogs = async (
 };
 
 const getSingleBlog = async (blogId: string): Promise<Blog | null> => {
+  //
+
   const result = await prisma.blog.findUnique({
     where: {
       blogId,
@@ -143,61 +145,54 @@ const getSingleBlog = async (blogId: string): Promise<Blog | null> => {
   return result;
 };
 
-const updateBlog = async (
+// update
+const updateBlogDetails = async (
   blogId: string,
-  payload: Partial<IBlogUpdateRequest>
-): Promise<Blog | null> => {
-  const isExist = await prisma.blog.findUnique({
+  updatedData: IBlogCreateRequest
+): Promise<Blog> => {
+  const existingBlog = await prisma.blog.findUnique({
     where: {
       blogId,
     },
   });
 
-  if (!isExist) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Blog Not Found !!!');
+  if (!existingBlog) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Blog not found');
   }
 
-  const updateData = {
-    blogTitle: payload?.blogTitle,
-    blogDescription: payload?.blogDescription,
-    blogImage: payload?.blogImage,
-  };
+  if (Object.keys(updatedData).length === 0) {
+    return existingBlog;
+  }
 
   const result = await prisma.blog.update({
     where: {
       blogId,
     },
-    data: updateData,
+    data: updatedData,
   });
-  if (!result) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Blog Updating Failed !!!');
-  }
+
   return result;
 };
 
-const deleteBlog = async (blogId: string): Promise<Blog | null> => {
-  const result = await prisma.$transaction(async transactionClient => {
-    const isExist = await transactionClient.blog.findUnique({
-      where: {
-        blogId,
-      },
-    });
-
-    if (!isExist) {
-      throw new ApiError(httpStatus.NOT_FOUND, 'Blog Not Found');
-    }
-
-    const blogDeleted = await transactionClient.blog.delete({
-      where: {
-        blogId,
-      },
-    });
-
-    return blogDeleted;
+// delete
+const deleteBlog = async (blogId: string): Promise<Blog> => {
+  //
+  const isExistBlog = await prisma.blog.findUnique({
+    where: {
+      blogId,
+    },
   });
-  if (!result) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Blog Not Deleted');
+
+  if (!isExistBlog) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Blog not found');
   }
+
+  const result = await prisma.blog.delete({
+    where: {
+      blogId,
+    },
+  });
+
   return result;
 };
 
@@ -205,6 +200,6 @@ export const BlogService = {
   createNewBlog,
   getAllBlogs,
   getSingleBlog,
+  updateBlogDetails,
   deleteBlog,
-  updateBlog,
 };

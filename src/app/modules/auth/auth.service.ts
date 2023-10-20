@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { userRole } from '@prisma/client';
 import bcrypt from 'bcrypt';
-import { Request } from 'express';
 import httpStatus from 'http-status';
 import { Secret } from 'jsonwebtoken';
 import config from '../../../config';
@@ -15,13 +13,10 @@ import {
   IUserCreate,
   IUserLogin,
 } from './auth.interface';
+import { userRole } from '@prisma/client';
 
-// Create User
-const createNewUser = async (req: Request) => {
-  const data = (await req.body) as IUserCreate;
-
-  console.log('data', data);
-
+// ! user create
+const createNewUser = async (data: IUserCreate) => {
   const { password, email } = data;
 
   const hashedPassword = await bcrypt.hash(
@@ -42,8 +37,8 @@ const createNewUser = async (req: Request) => {
     const profileData = {
       firstName: data.firstName,
       lastName: data.lastName,
-      profileImage: data.profileImage!,
-      role: data.role!,
+      profileImage: data?.profileImage!,
+      role: data?.role,
     };
 
     const createdProfile = await transactionClient.profile.create({
@@ -55,8 +50,6 @@ const createNewUser = async (req: Request) => {
         role: true,
       },
     });
-
-    console.log('specializationId', data.specializationId);
 
     if (createdProfile.role == userRole.DOCTOR) {
       await transactionClient.doctor.create({
@@ -105,7 +98,7 @@ const createNewUser = async (req: Request) => {
   return newUser;
 };
 
-// Login
+//! login
 const userLogin = async (
   loginData: IUserLogin
 ): Promise<ILoginUserResponse> => {
@@ -123,8 +116,6 @@ const userLogin = async (
         select: {
           role: true,
           profileId: true,
-          firstName: true,
-          lastName: true,
         },
       },
     },
@@ -145,8 +136,6 @@ const userLogin = async (
     role: userRole;
     profileId: string;
     email: string;
-    firstName: string;
-    lastName: string;
   };
 
   const tokenData: TokenData = {
@@ -154,8 +143,6 @@ const userLogin = async (
     role: isUserExist?.profile?.role!,
     profileId: isUserExist.profile?.profileId!,
     email: isUserExist.email,
-    firstName: isUserExist.profile?.firstName!,
-    lastName: isUserExist.profile?.lastName!,
   };
 
   const accessToken = jwtHelpers.createToken(
@@ -175,10 +162,12 @@ const userLogin = async (
   };
 };
 
-// Refresh-Token
+// !refreshToken --------------------------------
 const refreshToken = async (token: string): Promise<IRefreshTokenResponse> => {
-  // verify token
+  // ! verify token
   let verifiedToken = null;
+
+  console.log(token, 'shafin=========');
 
   try {
     verifiedToken = jwtHelpers.verifyToken(
@@ -186,10 +175,11 @@ const refreshToken = async (token: string): Promise<IRefreshTokenResponse> => {
       config.jwt.refresh_secret as Secret
     );
   } catch (error) {
+    // err
     throw new ApiError(httpStatus.FORBIDDEN, 'Invalid Refresh Token');
   }
-
-  // If user does not exist, check deleted user's refresh token
+  //! if user not exist
+  // !checking deleted user's refresh token
   const { userId } = verifiedToken;
 
   const isUserExist = await prisma.user.findFirst({
@@ -199,6 +189,7 @@ const refreshToken = async (token: string): Promise<IRefreshTokenResponse> => {
     select: {
       userId: true,
       password: true,
+      email: true,
       profile: {
         select: {
           role: true,
@@ -207,7 +198,6 @@ const refreshToken = async (token: string): Promise<IRefreshTokenResponse> => {
       },
     },
   });
-
   if (!isUserExist) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User does not exists!!');
   }
@@ -216,15 +206,17 @@ const refreshToken = async (token: string): Promise<IRefreshTokenResponse> => {
     userId: string;
     role: userRole;
     profileId: string;
+    email: string;
   };
 
   const tokenData: TokenData = {
     userId: isUserExist.userId,
     role: isUserExist?.profile?.role!,
     profileId: isUserExist?.profile?.profileId!,
+    email: isUserExist.email,
   };
 
-  // Generate new token
+  // generate new token
   const newAccessToken = jwtHelpers.createToken(
     tokenData,
     config.jwt.secret as Secret,

@@ -1,18 +1,21 @@
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
-import { ReviewAndRatings } from '@prisma/client';
-import httpStatus from 'http-status';
-import ApiError from '../../../errors/ApiError';
+
 import prisma from '../../../shared/prisma';
+import ApiError from '../../../errors/ApiError';
+import httpStatus from 'http-status';
 import {
   ICreateReviewAndRatingReq,
   ICreateReviewAndRatingResponse,
   IUpdateReviewRequest,
 } from './reviewAndRating.interface';
+import { ReviewAndRatings } from '@prisma/client';
 
+// ! Review and Rating create
 const createNewRatingAndReview = async (
   profileId: string,
   payload: ICreateReviewAndRatingReq
 ): Promise<ICreateReviewAndRatingResponse> => {
+  //
   const isExisting = await prisma.service.findUnique({
     where: {
       serviceId: payload.serviceId,
@@ -34,10 +37,8 @@ const createNewRatingAndReview = async (
       reviewComment: true,
       reviewRating: true,
       createdAt: true,
-      reviewId: true,
     },
   });
-
   if (!createdNewRatingAndReview) {
     throw new ApiError(
       httpStatus.BAD_REQUEST,
@@ -48,6 +49,7 @@ const createNewRatingAndReview = async (
   return createdNewRatingAndReview;
 };
 
+// ! update Service ----------------------
 const updateRatingAndReview = async (
   reviewId: string,
   payload: Partial<IUpdateReviewRequest>
@@ -55,12 +57,6 @@ const updateRatingAndReview = async (
   const isExistReview = await prisma.reviewAndRatings.findUnique({
     where: {
       reviewId,
-    },
-    select: {
-      reviewComment: true,
-      reviewRating: true,
-      createdAt: true,
-      reviewId: true,
     },
   });
 
@@ -79,14 +75,13 @@ const updateRatingAndReview = async (
     },
     data: updateReview,
   });
-
-  //   console.log('result: ', result);
-
   if (!result) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Reviews Updating Failed !!!');
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Review sUpdating Failed !!!');
   }
   return result;
 };
+
+// ! delete Review s----------------------
 
 const SingleRatingAndReviewDelete = async (
   reviewId: string
@@ -118,29 +113,64 @@ const SingleRatingAndReviewDelete = async (
   return result;
 };
 
-const getAllMyReviews = async (
-  profileId: string
-): Promise<ReviewAndRatings[]> => {
-  //
-
+// get all reviews
+const getAllReviews = async () => {
   const result = await prisma.reviewAndRatings.findMany({
-    where: {
-      profile: {
-        profileId,
-      },
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
-    include: {
+    select: {
+      reviewComment: true,
+      reviewRating: true,
+      createdAt: true,
       service: {
         select: {
           serviceName: true,
+          serviceId: true,
+        },
+      },
+      profile: {
+        select: {
+          firstName: true,
+          lastName: true,
+          profileId: true,
         },
       },
     },
   });
+  if (!result) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Review Not Found');
+  }
+  return result;
+};
 
+// get only user reviews
+const getOnlyUserReviews = async (profileId: string) => {
+  const result = await prisma.reviewAndRatings.findMany({
+    where: {
+      profileId,
+    },
+    select: {
+      reviewComment: true,
+      reviewRating: true,
+      createdAt: true,
+      reviewId: true,
+      service: {
+        select: {
+          serviceName: true,
+          serviceId: true,
+        },
+      },
+      profile: {
+        select: {
+          firstName: true,
+          lastName: true,
+          profileId: true,
+          profileImage: true,
+        },
+      },
+    },
+  });
+  if (!result) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Review Not Found');
+  }
   return result;
 };
 
@@ -148,5 +178,6 @@ export const RatingAndReviewService = {
   createNewRatingAndReview,
   updateRatingAndReview,
   SingleRatingAndReviewDelete,
-  getAllMyReviews,
+  getAllReviews,
+  getOnlyUserReviews,
 };

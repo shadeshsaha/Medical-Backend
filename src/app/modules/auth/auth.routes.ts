@@ -1,8 +1,8 @@
 import express from 'express';
+import { UserValidation } from '../users/user.validations';
+import { AuthController } from './auth.controller';
 
 import validateRequest from '../../middlewares/validateRequest';
-import { UserValidation } from '../users/users.validations';
-import { AuthController } from './auth.controller';
 
 const router = express.Router();
 
@@ -18,6 +18,10 @@ router.post(
   AuthController.userLogin
 );
 
-router.post('/refresh-token', AuthController.refreshToken);
+router.post(
+  '/refresh-token',
+
+  AuthController.refreshToken
+);
 
 export const AuthRoutes = router;

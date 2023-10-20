@@ -3,8 +3,10 @@ import { Prisma, Product } from '@prisma/client';
 import { Request } from 'express';
 import httpStatus from 'http-status';
 import ApiError from '../../../errors/ApiError';
+
 import { paginationHelpers } from '../../../helpers/paginationHelper';
 import { IGenericResponse } from '../../../interfaces/common';
+
 import { IPaginationOptions } from '../../../interfaces/pagination';
 import prisma from '../../../shared/prisma';
 import {
@@ -18,6 +20,8 @@ import {
   IUpdateProductRequest,
 } from './products.interface';
 
+// modules
+
 const createNewProduct = async (
   profileId: string,
   req: Request
@@ -30,7 +34,7 @@ const createNewProduct = async (
       productDescription: data.productDescription,
       productPrice: data.productPrice,
       productImage: data.productImage,
-      profileId: profileId,
+      profileId,
       serviceId: data.serviceId,
     };
 
@@ -103,6 +107,15 @@ const getAllProducts = async (
     where: whereConditions,
     skip,
     take: limit,
+    include: {
+      service: {
+        select: {
+          serviceId: true,
+          serviceName: true,
+          serviceImage: true,
+        },
+      },
+    },
     orderBy:
       options.sortBy && options.sortOrder
         ? { [options.sortBy]: options.sortOrder }
@@ -130,6 +143,9 @@ const getSingleProduct = async (productId: string): Promise<Product | null> => {
     where: {
       productId,
     },
+    include: {
+      service: true,
+    },
   });
 
   if (!result) {
@@ -138,6 +154,7 @@ const getSingleProduct = async (productId: string): Promise<Product | null> => {
   return result;
 };
 
+// ! update Service ----------------------
 const updateProduct = async (
   productId: string,
   payload: Partial<IUpdateProductRequest>

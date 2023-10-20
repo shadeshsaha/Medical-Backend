@@ -3,9 +3,10 @@ import httpStatus from 'http-status';
 import catchAsync from '../../../shared/catchAsync';
 import pick from '../../../shared/pick';
 import sendResponse from '../../../shared/sendResponse';
-import { IRequestUser } from '../users/users.interface';
-import { specializationFilterableFields } from './specialization.constants';
+import { IRequestUser } from '../users/user.interface';
+
 import { SpecializationService } from './specialization.service';
+import { specializationFilterableFields } from './specialization.constants';
 
 const createNewSpecialization = catchAsync(
   async (req: Request, res: Response) => {
@@ -36,7 +37,7 @@ const getAllSpecialization = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'All Specialization fetched successfully',
+    message: 'Specialization fetched successfully',
     meta: result.meta,
     data: result.data,
   });

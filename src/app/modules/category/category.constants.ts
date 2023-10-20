@@ -1,14 +1,4 @@
-export const stylesFilterableFields: string[] = [
-  'orderNo',
-  'searchTerm',
-  'factoryId',
-  'styleNo',
-  'profileId',
-  'itemId',
-  'createdAt',
-  'startDate',
-  'endDate',
-];
+export const categoryFilterableFields: string[] = ['searchTerm', 'createdAt'];
 
 export const categorySearchableFields: string[] = ['categoryName'];
 

@@ -18,6 +18,8 @@ import {
   IUpdateCategoryRequest,
 } from './category.interface';
 
+// modules
+
 const createCategory = async (
   profileId: string,
   req: Request
@@ -114,6 +116,7 @@ const getAllCategory = async (
   };
 };
 
+// ! update Category ----------------------
 const updateCategory = async (
   categoryId: string,
   payload: Partial<IUpdateCategoryRequest>

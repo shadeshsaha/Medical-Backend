@@ -18,6 +18,8 @@ import {
   IUpdateSpecializationRequest,
 } from './specialization.interface';
 
+// modules
+
 const createSpecialization = async (
   profileId: string,
   req: Request
@@ -122,6 +124,7 @@ const getAllSpecialization = async (
   };
 };
 
+// ! update Service ----------------------
 const updateSpecialization = async (
   specializationId: string,
   payload: Partial<IUpdateSpecializationRequest>

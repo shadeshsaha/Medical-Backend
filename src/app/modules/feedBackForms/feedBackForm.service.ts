@@ -1,38 +1,46 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 
-import { FeedBackForm, Prisma } from '@prisma/client';
-import httpStatus from 'http-status';
-import ApiError from '../../../errors/ApiError';
-import { paginationHelpers } from '../../../helpers/paginationHelper';
-import { IGenericResponse } from '../../../interfaces/common';
-import { IPaginationOptions } from '../../../interfaces/pagination';
 import prisma from '../../../shared/prisma';
-import {
-  FeedBackSearchableFields,
-  feedBackRelationalFields,
-  feedBackRelationalFieldsMapper,
-} from './feedBackForm.constant';
+import ApiError from '../../../errors/ApiError';
+import httpStatus from 'http-status';
 import {
   ICreateFeedBackFormReq,
   ICreateFeedBackFormResponse,
   IFeedBackFilterRequest,
   IUpdateFeedBackRequest,
 } from './feedBackForm.interface';
+import { paginationHelpers } from '../../../helpers/paginationHelper';
 
+import { IGenericResponse } from '../../../interfaces/common';
+import { IPaginationOptions } from '../../../interfaces/pagination';
+import {
+  FeedBackSearchableFields,
+  feedBackRelationalFields,
+  feedBackRelationalFieldsMapper,
+} from './feedBackForm.constants';
+import { FeedBack, Prisma } from '@prisma/client';
+
+// !feedBackForm
 const createNewFeedBackForm = async (
+  profileId: string,
   payload: ICreateFeedBackFormReq
 ): Promise<ICreateFeedBackFormResponse> => {
-  const createdNewFeedBack = await prisma.feedBackForm.create({
+  //
+
+  const createdNewFeedBack = await prisma.feedBack.create({
     data: {
-      feedbackComment: payload.feedbackComment,
-      userName: payload.userName,
-      email: payload.email,
-      contactNumber: payload.contactNumber,
+      feedbackSubject: payload.feedbackSubject,
+      feedbackDescription: payload.feedbackDescription,
+      profileId,
+    },
+    select: {
+      feedbackId: true,
+      feedbackSubject: true,
+      feedbackDescription: true,
+      createdAt: true,
     },
   });
-
-  console.log(createdNewFeedBack);
-
   if (!createdNewFeedBack) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Feedback failed to add');
   }
@@ -43,7 +51,7 @@ const createNewFeedBackForm = async (
 const getAllFeedBack = async (
   filters: IFeedBackFilterRequest,
   options: IPaginationOptions
-): Promise<IGenericResponse<FeedBackForm[]>> => {
+): Promise<IGenericResponse<FeedBack[]>> => {
   const { limit, page, skip } = paginationHelpers.calculatePagination(options);
 
   const { searchTerm, ...filterData } = filters;
@@ -81,13 +89,23 @@ const getAllFeedBack = async (
     });
   }
 
-  const whereConditions: Prisma.FeedBackFormWhereInput =
+  const whereConditions: Prisma.FeedBackWhereInput =
     andConditions.length > 0 ? { AND: andConditions } : {};
 
-  const result = await prisma.feedBackForm.findMany({
+  const result = await prisma.feedBack.findMany({
     where: whereConditions,
     skip,
     take: limit,
+    include: {
+      profile: {
+        select: {
+          firstName: true,
+          lastName: true,
+          profileImage: true,
+          profileId: true,
+        },
+      },
+    },
     orderBy:
       options.sortBy && options.sortOrder
         ? { [options.sortBy]: options.sortOrder }
@@ -95,12 +113,10 @@ const getAllFeedBack = async (
             createdAt: 'desc',
           },
   });
-
-  const total = await prisma.feedBackForm.count({
+  const total = await prisma.feedBack.count({
     where: whereConditions,
   });
   const totalPage = Math.ceil(total / limit);
-
   return {
     meta: {
       page,
@@ -112,11 +128,12 @@ const getAllFeedBack = async (
   };
 };
 
+// ! update Service ----------------------
 const updateFeedBack = async (
   feedbackId: string,
   payload: Partial<IUpdateFeedBackRequest>
-): Promise<FeedBackForm | null> => {
-  const isExistFeedBack = await prisma.feedBackForm.findUnique({
+): Promise<FeedBack | null> => {
+  const isExistFeedBack = await prisma.feedBack.findUnique({
     where: {
       feedbackId,
     },
@@ -127,13 +144,11 @@ const updateFeedBack = async (
   }
 
   const updateFeedback = {
-    feedbackComment: payload?.feedbackComment,
-    userName: payload?.userName,
-    email: payload?.email,
-    contactNumber: payload?.contactNumber,
+    feedbackSubject: payload?.feedbackSubject,
+    feedbackDescription: payload?.feedbackDescription,
   };
 
-  const result = await prisma.feedBackForm.update({
+  const result = await prisma.feedBack.update({
     where: {
       feedbackId,
     },
@@ -145,11 +160,13 @@ const updateFeedBack = async (
   return result;
 };
 
+// ! delete feedBack ----------------------
+
 const SingleFeedbackDelete = async (
   feedbackId: string
-): Promise<FeedBackForm | null> => {
+): Promise<FeedBack | null> => {
   const result = await prisma.$transaction(async transactionClient => {
-    const isExistFeedBack = await transactionClient.feedBackForm.findUnique({
+    const isExistFeedBack = await transactionClient.feedBack.findUnique({
       where: {
         feedbackId,
       },
@@ -159,7 +176,7 @@ const SingleFeedbackDelete = async (
       throw new ApiError(httpStatus.NOT_FOUND, 'Feed Back Not Found');
     }
 
-    const feedBackDeleted = await transactionClient.feedBackForm.delete({
+    const feedBackDeleted = await transactionClient.feedBack.delete({
       where: {
         feedbackId,
       },

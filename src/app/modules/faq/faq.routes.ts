@@ -1,10 +1,10 @@
 import express from 'express';
 
-import { userRole } from '@prisma/client';
-import auth from '../../middlewares/auth';
 import validateRequest from '../../middlewares/validateRequest';
 import { FaqController } from './faq.controller';
 import { FaqValidation } from './faq.validations';
+import auth from '../../middlewares/auth';
+import { userRole } from '@prisma/client';
 
 const router = express.Router();
 
@@ -16,18 +16,16 @@ router.post(
   validateRequest(FaqValidation.createFaq),
   FaqController.createNewFaq
 );
-
+router.delete(
+  '/delete/:faqId',
+  auth(userRole.ADMIN, userRole.SUPER_ADMIN),
+  FaqController.deleteFaq
+);
 router.patch(
   '/update/:faqId',
   auth(userRole.ADMIN, userRole.SUPER_ADMIN),
   validateRequest(FaqValidation.updateFaq),
   FaqController.updateFaqDetails
-);
-
-router.delete(
-  '/delete/:faqId',
-  auth(userRole.ADMIN, userRole.SUPER_ADMIN),
-  FaqController.deleteFaq
 );
 
 export const FaqRoutes = router;

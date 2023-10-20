@@ -13,9 +13,3 @@ export type IBlogFilterRequest = {
   searchTerm?: string | undefined;
   profileId?: string | undefined;
 };
-
-export type IBlogUpdateRequest = {
-  blogTitle?: string;
-  blogDescription?: string;
-  blogImage?: string;
-};

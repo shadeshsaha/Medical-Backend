@@ -1,15 +1,16 @@
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 
-import { TimeSlot } from '@prisma/client';
-import httpStatus from 'http-status';
-import ApiError from '../../../errors/ApiError';
 import prisma from '../../../shared/prisma';
+import ApiError from '../../../errors/ApiError';
+import httpStatus from 'http-status';
+import { TimeSlot } from '@prisma/client';
 import {
   ICreateSlotReq,
   ICreateSlotResponse,
   IUpdateSlotRequest,
 } from './slots.interface';
 
+// ! user create
 const createNewSlot = async (
   payload: ICreateSlotReq
 ): Promise<ICreateSlotResponse> => {
@@ -41,11 +42,13 @@ const createNewSlot = async (
 };
 
 const getAllSlots = async (): Promise<TimeSlot[]> => {
+  //
   const allSlots = await prisma.timeSlot.findMany({});
 
   return allSlots;
 };
 
+// ! update Slot ----------------------
 const updateSlot = async (
   slotId: string,
   payload: Partial<IUpdateSlotRequest>
@@ -80,7 +83,11 @@ const updateSlot = async (
   return result;
 };
 
+// ! delete Service ----------------------
+
 const SlotDelete = async (slotId: string): Promise<TimeSlot | null> => {
+  //
+
   const isExistSlot = await prisma.timeSlot.findUnique({
     where: {
       slotId,

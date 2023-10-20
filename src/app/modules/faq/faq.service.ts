@@ -1,17 +1,20 @@
-import { Faq } from '@prisma/client';
-import httpStatus from 'http-status';
-import ApiError from '../../../errors/ApiError';
 import prisma from '../../../shared/prisma';
+import ApiError from '../../../errors/ApiError';
+import httpStatus from 'http-status';
 import {
   ICreateNewFaqReq,
   ICreateReviewAndRatingResponse,
   IUpdateFaqReq,
 } from './faq.interface';
+import { Faq } from '@prisma/client';
 
+// ! fq
 const createNewFaq = async (
   profileId: string,
   payload: ICreateNewFaqReq
 ): Promise<ICreateReviewAndRatingResponse> => {
+  //
+
   const result = await prisma.faq.create({
     data: {
       faqTitle: payload.faqTitle,
@@ -22,7 +25,6 @@ const createNewFaq = async (
       faqTitle: true,
       faqDescription: true,
       createdAt: true,
-      faqId: true,
     },
   });
   if (!result) {
@@ -31,8 +33,10 @@ const createNewFaq = async (
 
   return result;
 };
-
+// ! fq
 const getAllFaqs = async (): Promise<Faq[]> => {
+  //
+
   const result = await prisma.faq.findMany({
     orderBy: {
       createdAt: 'desc',
@@ -45,6 +49,26 @@ const getAllFaqs = async (): Promise<Faq[]> => {
           profileImage: true,
         },
       },
+    },
+  });
+
+  return result;
+};
+const deleteFaq = async (faqId: string): Promise<Faq> => {
+  //
+  const isExistFaq = await prisma.faq.findUnique({
+    where: {
+      faqId,
+    },
+  });
+
+  if (!isExistFaq) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Faq not found');
+  }
+
+  const result = await prisma.faq.delete({
+    where: {
+      faqId,
     },
   });
 
@@ -83,29 +107,9 @@ const updateFaqDetails = async (
   return result;
 };
 
-const deleteFaq = async (faqId: string): Promise<Faq> => {
-  const isExistFaq = await prisma.faq.findUnique({
-    where: {
-      faqId,
-    },
-  });
-
-  if (!isExistFaq) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Faq not found');
-  }
-
-  const result = await prisma.faq.delete({
-    where: {
-      faqId,
-    },
-  });
-
-  return result;
-};
-
 export const FaqService = {
   createNewFaq,
   getAllFaqs,
-  updateFaqDetails,
   deleteFaq,
+  updateFaqDetails,
 };

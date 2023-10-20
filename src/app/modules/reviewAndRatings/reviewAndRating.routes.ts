@@ -1,13 +1,25 @@
-import { userRole } from '@prisma/client';
 import express from 'express';
-import auth from '../../middlewares/auth';
+
 import validateRequest from '../../middlewares/validateRequest';
 import { ReviewController } from './reviewAndRating.controller';
 import { ReviewAndRatingValidation } from './reviewAndRating.validations';
+import auth from '../../middlewares/auth';
+import { userRole } from '@prisma/client';
 
 const router = express.Router();
 
-router.get('/my-reviews', auth(userRole.USER), ReviewController.getMyReviews);
+router.get(
+  '/',
+  auth(userRole.USER, userRole.ADMIN, userRole.SUPER_ADMIN),
+  ReviewController.getAllReviews
+);
+
+// get only user reviews
+router.get(
+  '/my-reviews',
+  auth(userRole.USER),
+  ReviewController.getOnlyUserReviews
+);
 
 router.post(
   '/add-review',
@@ -19,7 +31,7 @@ router.post(
 router.patch(
   '/:reviewId',
   auth(userRole.USER, userRole.ADMIN, userRole.SUPER_ADMIN),
-  validateRequest(ReviewAndRatingValidation.updateReviewAndRating),
+  // validateRequest(ReviewAndRatingValidation.createReviewAndRating),
   ReviewController.updateReview
 );
 

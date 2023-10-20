@@ -1,13 +1,20 @@
 import { Request, Response } from 'express';
 import httpStatus from 'http-status';
 import catchAsync from '../../../shared/catchAsync';
-import pick from '../../../shared/pick';
 import sendResponse from '../../../shared/sendResponse';
-import { FeedBackFilterableFields } from './feedBackForm.constant';
 import { FeedBackFormService } from './feedBackForm.service';
+import { IRequestUser } from '../users/user.interface';
+import { FeedBackFilterableFields } from './feedBackForm.constants';
+import pick from '../../../shared/pick';
+
+//! createNewFeedBack Create
 
 const createNewFeedBack = catchAsync(async (req: Request, res: Response) => {
-  const result = await FeedBackFormService.createNewFeedBackForm(req.body);
+  const profileId = (req.user as IRequestUser).profileId;
+  const result = await FeedBackFormService.createNewFeedBackForm(
+    profileId,
+    req.body
+  );
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -26,7 +33,7 @@ const getAllFeedBack = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'All FeedBacks fetched successfully',
+    message: 'FeedBack fetched successfully',
     meta: result.meta,
     data: result.data,
   });
@@ -51,7 +58,7 @@ const singleFeedBackDelete = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: `${result?.feedbackComment} Deleted successfully`,
+    message: ` ${result?.feedbackSubject} Deleted successfully`,
   });
 });
 

@@ -2,8 +2,10 @@ import { Request, Response } from 'express';
 import httpStatus from 'http-status';
 import catchAsync from '../../../shared/catchAsync';
 import sendResponse from '../../../shared/sendResponse';
-import { IRequestUser } from '../users/users.interface';
 import { RatingAndReviewService } from './reviewAndRating.service';
+import { IRequestUser } from '../users/user.interface';
+
+//! slot Create
 
 const createNewSlot = catchAsync(async (req: Request, res: Response) => {
   const profileId = (req.user as IRequestUser).profileId;
@@ -15,7 +17,7 @@ const createNewSlot = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Review And Ratings created successfully!',
+    message: 'slot created successfully!',
     data: result,
   });
 });
@@ -48,15 +50,27 @@ const singleReviewDelete = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const getMyReviews = catchAsync(async (req: Request, res: Response) => {
-  const profileId = (req.user as IRequestUser).profileId;
-
-  const result = await RatingAndReviewService.getAllMyReviews(profileId);
+// get all reviews
+const getAllReviews = catchAsync(async (req: Request, res: Response) => {
+  const result = await RatingAndReviewService.getAllReviews();
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'fetched successfully',
+    message: 'All Reviews',
+    data: result,
+  });
+});
+
+// get only user reviews
+const getOnlyUserReviews = catchAsync(async (req: Request, res: Response) => {
+  const profileId = (req.user as IRequestUser).profileId;
+  const result = await RatingAndReviewService.getOnlyUserReviews(profileId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'All Reviews',
     data: result,
   });
 });
@@ -65,5 +79,6 @@ export const ReviewController = {
   createNewSlot,
   updateReview,
   singleReviewDelete,
-  getMyReviews,
+  getAllReviews,
+  getOnlyUserReviews,
 };

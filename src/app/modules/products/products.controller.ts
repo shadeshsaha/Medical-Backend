@@ -3,13 +3,12 @@ import httpStatus from 'http-status';
 import catchAsync from '../../../shared/catchAsync';
 import pick from '../../../shared/pick';
 import sendResponse from '../../../shared/sendResponse';
-import { IRequestUser } from '../users/users.interface';
-import { ProductFilterableFields } from './products.constants';
+import { IRequestUser } from '../users/user.interface';
 import { ProductsService } from './products.service';
+import { ProductFilterableFields } from './products.constants';
 
 const createNewProduct = catchAsync(async (req: Request, res: Response) => {
   const profileId = (req.user as IRequestUser).profileId;
-  console.log('profileId: ', profileId);
   const result = await ProductsService.createNewProduct(profileId, req);
 
   sendResponse(res, {
@@ -29,7 +28,7 @@ const getAllProducts = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'All Products fetched successfully',
+    message: 'Products fetched successfully',
     meta: result.meta,
     data: result.data,
   });
@@ -42,7 +41,7 @@ const getSingleProduct = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Single Product retrieved successfully',
+    message: 'Product retrieved successfully',
     data: result,
   });
 });
@@ -54,7 +53,7 @@ const updateProduct = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Product Updated successfully',
+    message: 'Product retrieved successfully',
     data: result,
   });
 });

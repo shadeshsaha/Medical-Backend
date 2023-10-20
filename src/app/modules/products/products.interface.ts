@@ -20,15 +20,3 @@ export type IUpdateProductRequest = {
   productImage?: string;
   serviceId?: string;
 };
-
-// export type IGetAllStyleNo = {
-//   styleNo: string;
-// };
-// export type IAssignedStyleResponse = {
-//   factory: Factory | null;
-//   styleNo: string;
-// };
-// export type IFactoryAssignToStyleResponse = {
-//   styleNo: string;
-//   factoryId: string;
-// };

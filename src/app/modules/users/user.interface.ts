@@ -18,8 +18,7 @@ export type IUsersResponse = {
 
 export type IUserUpdateReqAndResponse = {
   email?: string;
-  oldPassword?: string;
-  newPassword?: string;
+  password?: string;
 };
 export type IUpdateUserResponse = {
   message: string;
@@ -34,15 +33,6 @@ export type IProfileUpdateRequest = {
   coverPhoto?: string;
   bloodGroup?: string;
   role?: userRole;
-};
-export type IProfileMyUpdateRequest = {
-  firstName?: string;
-  lastName?: string;
-  profileImage?: string;
-  contactNumber?: string;
-  address?: string;
-  coverPhoto?: string;
-  bloodGroup?: string;
 };
 export type IUpdateMyProfileInfoResponse = {
   message: string;

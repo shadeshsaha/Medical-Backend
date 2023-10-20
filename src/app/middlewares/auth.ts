@@ -9,6 +9,7 @@ const auth = (...requiredRoles: string[]) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
       const token = req.headers.authorization;
+ 
 
       // If there's no token, the user is not authorized.
       if (!token) {

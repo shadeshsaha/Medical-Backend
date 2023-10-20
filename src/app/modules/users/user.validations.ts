@@ -70,12 +70,14 @@ const updateUser = z.object({
 
 const loginUser = z.object({
   body: z.object({
-    email: z
-      .string({ invalid_type_error: 'Email  must be valid in string' })
-      .optional(),
-    password: z
-      .string({ invalid_type_error: 'Password must be in string' })
-      .optional(),
+    email: z.string({
+      required_error: 'Email is Required for Login',
+      invalid_type_error: 'First Name must be in string',
+    }),
+    password: z.string({
+      required_error: 'Password is required for login',
+      invalid_type_error: 'Last Name must be in string',
+    }),
   }),
 });
 
@@ -84,3 +86,5 @@ export const UserValidation = {
   updateUser,
   loginUser,
 };
+
+

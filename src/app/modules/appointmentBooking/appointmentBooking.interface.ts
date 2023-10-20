@@ -3,7 +3,7 @@ export type ICreateAppointmentBookingReq = {
   serviceId: string;
   appointmentDate: Date;
   slotId: string;
-  appointmentStatus: appointmentStatus;
+  appointmentStatus: appointmentStatus; 
 };
 
 export type ICreateAppointmentBookingRes = {
@@ -15,7 +15,7 @@ export type IUpdateAppointmentBookingReq = {
   serviceId?: string;
   appointmentDate?: Date;
   slotId?: string;
-  appointmentStatus?: appointmentStatus;
+  appointmentStatus?: appointmentStatus; 
 };
 
 export type IAppointmentFilterRequest = {
@@ -29,8 +29,9 @@ export type IAppointmentFilterRequest = {
   appointmentStatus?: appointmentStatus | undefined;
 };
 
+
 export enum appointmentStatus {
-  pending = 'pending',
-  approved = 'approved',
-  rejected = 'rejected',
+  pending = "pending",
+  approved = "approved",
+  rejected = "rejected",
 }

@@ -19,30 +19,6 @@ const createAppointmentBooking = z.object({
   }),
 });
 
-const updateAppointmentBooking = z.object({
-  body: z.object({
-    appointmentDate: z
-      .string({
-        required_error: 'Appointment Date is required',
-      })
-      .refine(value => isValidISOString(value))
-      .optional(),
-    slotId: z
-      .string({
-        required_error: 'Slot Id is required',
-        invalid_type_error: 'Slot id must be in   string',
-      })
-      .optional(),
-    serviceId: z
-      .string({
-        required_error: 'Service Id is required',
-        invalid_type_error: 'Service Id must be in   string',
-      })
-      .optional(),
-  }),
-});
-
 export const AppointmentBookingValidation = {
   createAppointmentBooking,
-  updateAppointmentBooking,
 };

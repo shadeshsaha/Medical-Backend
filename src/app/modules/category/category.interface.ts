@@ -18,11 +18,3 @@ export type IUpdateCategoryRequest = {
   categoryName?: string;
   description?: string;
 };
-
-// export type IUpdateStyleRequest = {
-//   image?: string;
-//   fabric?: string;
-//   isActiveStyle?: boolean;
-//   factoryId?: string;
-//   itemId?: string;
-// };

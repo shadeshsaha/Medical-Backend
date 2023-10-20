@@ -5,21 +5,23 @@ import httpStatus from 'http-status';
 import ApiError from '../../../errors/ApiError';
 import prisma from '../../../shared/prisma';
 import {
-  ICreateNewServiceResponse,
-  IServiceCreateRequest,
   IServiceFilterRequest,
+  IServiceCreateRequest,
   IUpdateServiceRequest,
+  ICreateNewServiceResponse,
 } from './service.interface';
 
+import { IPaginationOptions } from '../../../interfaces/pagination';
+import { IGenericResponse } from '../../../interfaces/common';
 import { Prisma, Service } from '@prisma/client';
 import { paginationHelpers } from '../../../helpers/paginationHelper';
-import { IGenericResponse } from '../../../interfaces/common';
-import { IPaginationOptions } from '../../../interfaces/pagination';
 import {
   serviceRelationalFields,
   serviceRelationalFieldsMapper,
   serviceSearchableFields,
 } from './service.constants';
+
+// modules
 
 const createNewService = async (
   req: Request
@@ -118,6 +120,7 @@ const getAllServices = async (
       category: true,
       products: true,
       reviewAndRatings: true,
+      // feedBackForms: true,
       appointmentBooked: true,
     },
     where: whereConditions,
@@ -146,11 +149,15 @@ const getAllServices = async (
 };
 
 const getSingleService = async (serviceId: string): Promise<Service | null> => {
+  //
+
   const result = await prisma.service.findUnique({
     where: {
       serviceId,
     },
     include: {
+      category: true,
+      products: true,
       reviewAndRatings: {
         include: {
           profile: true,
@@ -159,6 +166,7 @@ const getSingleService = async (serviceId: string): Promise<Service | null> => {
           createdAt: 'desc',
         },
       },
+      appointmentBooked: true,
     },
   });
 
@@ -168,6 +176,7 @@ const getSingleService = async (serviceId: string): Promise<Service | null> => {
   return result;
 };
 
+// ! update Service ----------------------
 const updateService = async (
   serviceId: string,
   payload: Partial<IUpdateServiceRequest>
@@ -189,6 +198,7 @@ const updateService = async (
     location: payload?.location,
     categoryId: payload?.categoryId,
     servicePrice: payload?.servicePrice,
+    serviceStatus: payload?.serviceStatus,
   };
 
   const result = await prisma.service.update({
@@ -204,9 +214,13 @@ const updateService = async (
   return result;
 };
 
+// ! delete Service ----------------------
+
 const SingleServiceDelete = async (
   serviceId: string
 ): Promise<Service | null> => {
+  //
+
   const isExistService = await prisma.service.findUnique({
     where: {
       serviceId,

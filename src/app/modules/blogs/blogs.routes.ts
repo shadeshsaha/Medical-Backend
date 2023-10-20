@@ -1,9 +1,10 @@
-import { userRole } from '@prisma/client';
 import express from 'express';
+
 import auth from '../../middlewares/auth';
-import validateRequest from '../../middlewares/validateRequest';
 import { BlogsController } from './blogs.controller';
 import { BlogValidation } from './blogs.validation';
+import { userRole } from '@prisma/client';
+import validateRequest from '../../middlewares/validateRequest';
 
 const router = express.Router();
 
@@ -11,28 +12,21 @@ router.post(
   '/create-blog',
   auth(userRole.ADMIN, userRole.SUPER_ADMIN),
   validateRequest(BlogValidation.createBlog),
-  BlogsController.createNewBlog
+  BlogsController.createBlog
 );
+router.get('/', BlogsController.getAllBlogs);
+router.get('/:blogId', BlogsController.getSingleBlog);
 
-router.get(
-  '/',
-  auth(userRole.USER, userRole.ADMIN, userRole.SUPER_ADMIN, userRole.DOCTOR),
-  BlogsController.getAllBlogs
-);
-router.get(
-  '/:blogId',
-  auth(userRole.USER, userRole.ADMIN, userRole.SUPER_ADMIN, userRole.DOCTOR),
-  BlogsController.getSingleBlog
-);
-
+// update
 router.patch(
-  '/:blogId',
+  '/update/:blogId',
   auth(userRole.ADMIN, userRole.SUPER_ADMIN),
-  validateRequest(BlogValidation.updateBlog),
-  BlogsController.updateBlog
+  BlogsController.updateBlogDetails
 );
+
+// delete
 router.delete(
-  '/:blogId',
+  '/delete/:blogId',
   auth(userRole.ADMIN, userRole.SUPER_ADMIN),
   BlogsController.deleteBlog
 );
