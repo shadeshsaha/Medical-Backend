@@ -10,7 +10,10 @@ const app: Application = express();
 
 app.use(
   cors({
-    origin: ['http://localhost:3000',"https://meddic-hospital-managment-frontend.vercel.app"],
+    origin: [
+      'http://localhost:3000',
+      'https://medical-frontend-ecru.vercel.app',
+    ],
     credentials: true,
   })
 );
