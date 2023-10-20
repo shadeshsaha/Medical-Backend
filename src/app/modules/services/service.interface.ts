@@ -4,7 +4,7 @@ import { serviceStatus } from '@prisma/client';
 export type IServiceCreateRequest = {
   serviceName: string;
   description: string;
-  serviceImage: string;
+  serviceImage?: string;
   location: string;
   categoryId: string;
   servicePrice: number;
@@ -42,7 +42,7 @@ export type IUpdateServiceRequest = {
 export type ICreateNewServiceResponse = {
   serviceName: string;
   description: string;
-  serviceImage: string;
+  serviceImage?: string;
   location: string;
   categoryId: string;
   servicePrice: number;

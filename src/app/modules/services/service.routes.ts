@@ -1,20 +1,21 @@
 import express from 'express';
 
+import { userRole } from '@prisma/client';
 import auth from '../../middlewares/auth';
 import { MedServiceController } from './service.controller';
-import { userRole } from '@prisma/client';
 
 const router = express.Router();
-
-router.post(
-  '/create-service',
-  auth(userRole.ADMIN, userRole.SUPER_ADMIN),
-  MedServiceController.createNewService
-);
 
 router.get('/', MedServiceController.getAllServices);
 
 router.get('/:serviceId', MedServiceController.getSingleService);
+
+router.post(
+  '/create-service',
+  auth(userRole.ADMIN, userRole.SUPER_ADMIN),
+  // validateRequest(MedServiceValidation.createService),
+  MedServiceController.createNewService
+);
 
 router.patch(
   '/:serviceId',

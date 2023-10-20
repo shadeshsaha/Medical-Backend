@@ -5,16 +5,16 @@ import httpStatus from 'http-status';
 import ApiError from '../../../errors/ApiError';
 import prisma from '../../../shared/prisma';
 import {
-  IServiceFilterRequest,
-  IServiceCreateRequest,
-  IUpdateServiceRequest,
   ICreateNewServiceResponse,
+  IServiceCreateRequest,
+  IServiceFilterRequest,
+  IUpdateServiceRequest,
 } from './service.interface';
 
-import { IPaginationOptions } from '../../../interfaces/pagination';
-import { IGenericResponse } from '../../../interfaces/common';
 import { Prisma, Service } from '@prisma/client';
 import { paginationHelpers } from '../../../helpers/paginationHelper';
+import { IGenericResponse } from '../../../interfaces/common';
+import { IPaginationOptions } from '../../../interfaces/pagination';
 import {
   serviceRelationalFields,
   serviceRelationalFieldsMapper,

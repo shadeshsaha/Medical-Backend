@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { userRole } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import httpStatus from 'http-status';
 import { Secret } from 'jsonwebtoken';
@@ -13,7 +14,6 @@ import {
   IUserCreate,
   IUserLogin,
 } from './auth.interface';
-import { userRole } from '@prisma/client';
 
 // ! user create
 const createNewUser = async (data: IUserCreate) => {
@@ -88,6 +88,7 @@ const createNewUser = async (data: IUserCreate) => {
       },
     });
 
+    console.log('createdUser: ' + createdUser);
     if (!createdUser || !createdProfile) {
       throw new ApiError(httpStatus.BAD_REQUEST, 'Creating New User Failed');
     }
