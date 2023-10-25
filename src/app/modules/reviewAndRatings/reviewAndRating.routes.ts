@@ -1,10 +1,10 @@
 import express from 'express';
 
+import { userRole } from '@prisma/client';
+import auth from '../../middlewares/auth';
 import validateRequest from '../../middlewares/validateRequest';
 import { ReviewController } from './reviewAndRating.controller';
 import { ReviewAndRatingValidation } from './reviewAndRating.validations';
-import auth from '../../middlewares/auth';
-import { userRole } from '@prisma/client';
 
 const router = express.Router();
 
